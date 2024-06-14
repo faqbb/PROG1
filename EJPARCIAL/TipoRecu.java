@@ -11,73 +11,86 @@ public class TipoRecu {
             {0, -2, 17, 0, -4, 66, 0, -4, 90, 0, 0, 50, 0, 99, 0, 0, 0, 0, 0, 0, 0},
             {0, -5, 22, 0, -4, 3, 0, -2, 12, 0, 4, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0},
         };
+        getMaxCompressionValues(pic);
+    }
+
+    public static void getMaxCompressionValues(int[][] mat) {
         int maxCompressionRow = 0;
-        int maxCompression = -1;
-        
-        for (int cantFila = 0; cantFila < MAX_FILA; cantFila++) { // el for que recorre las distintas filas de la matriz
-            int ini = 0; 
-            int fin = -1;
-            int compressionCount = 0;
-            while (ini < MAX_COL) {     // mientras ini no sea mayor al tamaño de la fila o arr.length
-                ini = findIni(pic[cantFila], fin + 1);   // buscamos secuencia a partir de la posicion siguiente de la ultima secuencia o, en primera instancia, la primera posicion cuyo valor es distinto de SEPARADOR
-                if (ini < MAX_COL) {    // verificamos que no nos hayamos salido del rango al redefinir ini
-                    fin = findFin(pic[cantFila], ini) ;     // buscamos el final de la secuencia 
-                    if (pic[cantFila][ini] < 0) {   // las secuencias que nos interesan empiezan con un numero en negativo, si cumple, encontramos una
-                        int cantReps = Math.abs(pic[cantFila][ini]) - 1;    // ese valor negativo sera la cantidad de veces que tengamos que imprimir el pixel, le restamos 1 porque incluye el primero 
-                        compressionCount += cantReps;
-                        int pixelValue = pic[cantFila][ini + 1];    // define el valor del pixel para el reemplazo
-                        moveInReps(pic[cantFila], fin + 1, cantReps);   // inicia desde una posicion despues de la secuencia y lo repite la cantidad señalada 
-                        replacePixel(pic[cantFila], ini, cantReps , pixelValue);    // inicia desde que inicia la secuencia y lo repite la cantidad señalada 
-                        fin = ini + cantReps ;  //redefinimos porque agrandamos la secuencia unos cantReps lugares
-                    }
-                }
-            }
-            if(maxCompression < compressionCount) {
+        int maxCompression = 0;
+
+        for (int cantFila = 0; cantFila < MAX_FILA; cantFila++) {
+            int compressionCount = compressRow(mat[cantFila]);
+            if (compressionCount > maxCompression) {
                 maxCompression = compressionCount;
                 maxCompressionRow = cantFila;
             }
-            display(pic[cantFila]);
-            System.out.println("La cantidad de pixeles descomprimidos esta fila fue de " + compressionCount);
+            System.out.println("La cantidad de pixeles descomprimidos en esta fila fue de " + compressionCount);
         }
-        System.out.println("La fila que descomprimio mas pixeles fue la fila " + maxCompressionRow);
+
+        System.out.println("La fila que descomprimió más pixeles fue la fila " + maxCompressionRow);
     }
 
-    public static int findIni(int[] mat, int pos) { // encuentra ini
-        while (pos < MAX_COL && mat[pos] == SEPARADOR) {
+    public static int compressRow(int[] row) {
+        int ini = 0;
+        int fin = -1;
+        int compressionCount = 0;
+
+        while (ini < MAX_COL) {
+            ini = findIni(row, fin + 1);
+            if (ini < MAX_COL) {
+                fin = findFin(row, ini);
+                if (row[ini] < 0) {
+                    int cantReps = Math.abs(row[ini]) - 1;
+                    compressionCount += cantReps+1 ;
+                    int pixelValue = row[ini + 1];
+                    moveInReps(row, fin + 1, cantReps);
+                    replacePixel(row, ini, cantReps, pixelValue);
+                    fin = ini + cantReps;
+                }
+            }
+        }
+
+        display(row);
+        return compressionCount ;
+    }
+
+
+    public static int findIni(int[] row, int pos) { // encuentra ini
+        while (pos < MAX_COL && row[pos] == SEPARADOR) {
             pos++;
         }
         return pos;
     }
 
-    public static int findFin(int[] mat, int pos) { // encuentra fin
-        while (pos < MAX_COL && mat[pos] != SEPARADOR) {
+    public static int findFin(int[] row, int pos) { // encuentra fin
+        while (pos < MAX_COL && row[pos] != SEPARADOR) {
             pos++;
         }
         return pos -1;
     }
 
-    public static void moveRight(int[] mat, int pos) { //corre hacia la derecha
+    public static void moveRight(int[] row, int pos) { //corre hacia la derecha
             for (int i = MAX_COL; i >= pos; i--) {
-                mat[i] = mat[i - 1];
+                row[i] = row[i - 1];
             }
         }
 
-    public static void moveInReps(int[] mat, int pos,  int cantReps) { //corre unas cantReps veces
+    public static void moveInReps(int[] row, int pos,  int cantReps) { //corre unas cantReps veces
         for(int i = 0; i < cantReps -1; i++) {
-            moveRight(mat, pos);
+            moveRight(row, pos);
         }
     }
 
 
-    public static void replacePixel(int[] mat, int ini, int cantReps, int pixel) { //reemplaza cada valor de una parte delimitada de el arreglo por un valor pixel 
+    public static void replacePixel(int[] row, int ini, int cantReps, int pixel) { //reemplaza cada valor de una parte delimitada de el arreglo por un valor pixel 
         for (int i = 0; i < cantReps ; i++) {
-            mat[ini + i ] = pixel;
+            row[ini + i ] = pixel;
         }
     }
 
-    public static void display(int[] arr) { //muestra el arreglo
+    public static void display(int[] row) { //muestra el arreglo
         for (int i = 0; i < MAX_COL; i++) {
-            System.out.print(arr[i] + "|");
+            System.out.print(row[i] + "|");
         }
         System.out.println();
     }

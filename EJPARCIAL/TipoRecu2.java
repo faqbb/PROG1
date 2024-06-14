@@ -10,12 +10,15 @@ public class TipoRecu2 {
             {'¡', '¡', 'n', 'o', ' ', 'c', 'o', 'r', 't', 'a', 'r', ' ', 'f', 'o', 'r', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
             { ' ','c', 'o', 'n', ' ', 'r', 'e', 't', 'u', 'r', 'n', '!', '!', '!', '!', '!', '!', '!', '!', '!', '!', ' ', ' ', ' ', ' '}
         };
+        encryptMessage(message);
+    }
 
+    public static void encryptMessage(char[][] mat) {
         for(int rowCount = 0; rowCount < MAX_FILA;  rowCount++) {
             int secStart = 0;
             int secEnd = -1;
-            encryptRow(message[rowCount], secStart, secEnd);
-            displayRow(message[rowCount]);
+            encryptRow(mat[rowCount], secStart, secEnd);
+            displayRow(mat[rowCount]);
         }
     }
 
